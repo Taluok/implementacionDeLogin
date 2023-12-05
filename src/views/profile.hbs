@@ -1,19 +1,20 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
+    <title>Products</title>
 </head>
 
 <body>
-    <h1>Welcome, {{user.first_name}}!</h1>
-    <p>Email: {{user.email}}</p>
-    <p>Role: {{user.role}}</p>
+    <h1>{{ welcomeMessage }}</h1>
+    <h2>Welcome to the Products Page, {{ user.first_name }}!</h2>
+    <!-- Product listing or other content goes here -->
 
-    <form action="/logout" method="post">
-        <button type="submit">Logout</button>
+    <form action="/api/sessions/logout" method="post">
+    <button type="submit">Logout</button>
     </form>
 </body>
 

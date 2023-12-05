@@ -1,6 +1,5 @@
 import UserModel from '../models/userModel.js';
 
-
 const registerUser = async (req, res) => {
     const { first_name, last_name, email, age, password } = req.body;
 
@@ -47,7 +46,7 @@ const loginUser = async (req, res) => {
             first_name: user.first_name,
             last_name: user.last_name,
             email: user.email,
-            role: user.role
+            role: user.email === 'adminCoder@coder.com' && user.password === 'adminCod3r123' ? 'admin' : 'usuario'
         };
 
         // Redireccionar a la vista de productos después del login exitoso
@@ -58,7 +57,14 @@ const loginUser = async (req, res) => {
     }
 };
 
-export { registerUser, loginUser };
+const logoutUser = (req, res) => {
+    // Lógica para cerrar sesión y redirigir
+    req.session.destroy();
+    res.redirect('/');
+};
+
+export { registerUser, loginUser, logoutUser };
+
 
 
 

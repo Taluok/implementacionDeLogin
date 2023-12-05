@@ -14,8 +14,11 @@ const showProfile = (req, res) => {
 };
 
 const showProducts = (req, res) => {
-    // Tu lógica para mostrar la vista de productos
-    res.render('products', { user: req.session.user });
+    // Obtengo la información del usuario desde la sesión
+    const user = req.session.user;
+
+    //lógica para mostrar la vista de productos
+    res.render('products', { user, welcomeMessage: '¡Bienvenido a la página de productos!' });
 };
 
 export {
@@ -24,4 +27,5 @@ export {
     showProfile,
     showProducts
 };
+
 
