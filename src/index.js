@@ -1,37 +1,54 @@
-import express from 'express';
-import exphbs from 'express-handlebars';
-import bodyParser from 'body-parser';
-import session from 'express-session';
+import express from "express";
+import cookieParser from "cookie-parser";
+import session from "express-session";
+import { __dirname } from "./utils.js";
+import MongoStore from 'connect-mongo';
+import userRouter from './routes/user.router.js'
+import viewRouter from './routes/views.router.js';
+import './db/database.js';
+import { MONGOATLAS } from "./db/database.js";
+import handlebars from "express-handlebars";
+import productRouter from './routes/product.router.js';
+import cartRouter from './routes/cart.router.js';
 
 const app = express();
 
-// Configuración de Handlebars
-const hbs = exphbs.create({ extname: 'hbs' });
-app.engine('hbs', hbs.engine);
-app.set('view engine', 'hbs');
+const mongoStoreOptions = {
+    store: MongoStore.create({
+        mongoUrl: MONGOATLAS,
+        ttl: 120,
+        crypto: {
+            secret: '1234'
+        }
+    }),
+    secret: "1234",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 120000,
+    },
+};
 
-// Configuración de bodyParser
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
-// Configuración de sesión
-app.use(session({
-    secret: 'tu_secreto_aqui',
-    resave: true,
-    saveUninitialized: true
-}));
+//Configuración de handlebars
+app.engine('handlebars', handlebars.engine());
+app.set('view engine', 'handlebars');
+app.set('views', __dirname + '/views');
 
-// Configuración de rutas
-import sessionsRoutes from './routes/api/sessionsRoutes.js';
-import viewsRoutes from './routes/views/viewsRoutes.js';
-app.use('/api/sessions', sessionsRoutes);
-app.use('/', viewsRoutes);
+app.use(session(mongoStoreOptions));
 
-// Puerto de escucha
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Servidor en ejecución en el puerto ${PORT}`);
-});
+
+app.use('/views', viewRouter);
+app.use('/users', userRouter);
+app.use('products', productRouter);
+app.use('cart', cartRouter);
+
+const PORT = 8080;
+app.listen(PORT, () => console.log(`Server ok on port ${PORT}`));
+
 
 
 
