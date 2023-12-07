@@ -1,4 +1,4 @@
-import ProductServices from "../services/product.services.js";
+import ProductServices from '../services/product.services.js';
 
 const productServices = new ProductServices();
 
@@ -6,25 +6,20 @@ export default class ProductController {
     async getAllProducts(req, res, next) {
         try {
             const { page, limit, sort, query } = req.query;
-
             const products = await productServices.getAll(page, limit, sort, query);
 
-            let srtOptions = "";
-            if (limit) {
-                srtOptions += "&limit=" + limit;
-            }
-            if (sort) {
-                srtOptions += "&sort=" + sort;
-            }
+            let srtOptions = '';
+            if (limit) srtOptions += `&limit=${limit}`;
+            if (sort) srtOptions += `&sort=${sort}`;
 
             products.prevLink = products.hasPrevPage
-                ? "?page=" + products.prevPage + srtOptions
+                ? `?page=${products.prevPage}${srtOptions}`
                 : null;
             products.nextLink = products.hasNextPage
-                ? "?page=" + products.nextPage + srtOptions
+                ? `?page=${products.nextPage}${srtOptions}`
                 : null;
 
-            res.render('products', { products }); 
+            res.render('products', { products });
         } catch (error) {
             next(error);
         }
@@ -35,11 +30,8 @@ export default class ProductController {
             const { id } = req.params;
             const product = await productServices.getById(id);
 
-            if (!product) {
-                res.render('productNotFound'); 
-            } else {
-                res.render('productDetail', { product }); 
-            }
+            if (!product) res.render('productNotFound');
+            else res.render('productDetail', { product });
         } catch (error) {
             next(error);
         }
@@ -49,11 +41,8 @@ export default class ProductController {
         try {
             const newProduct = await productServices.create(req.body);
 
-            if (!newProduct) {
-                res.render('errorCreatingProduct'); 
-            } else {
-                res.render('productCreated', { newProduct }); 
-            }
+            if (!newProduct) res.render('errorCreatingProduct');
+            else res.render('productCreated', { newProduct });
         } catch (error) {
             next(error);
         }
@@ -64,11 +53,8 @@ export default class ProductController {
             const { id } = req.params;
             const productUpdt = await productServices.update(id, req.body);
 
-            if (!productUpdt) {
-                res.render('productNotFound');
-            } else {
-                res.render('productUpdated', { productUpdt });
-            }
+            if (!productUpdt) res.render('productNotFound');
+            else res.render('productUpdated', { productUpdt });
         } catch (error) {
             next(error);
         }
@@ -79,16 +65,15 @@ export default class ProductController {
             const { id } = req.params;
             const productDel = await productServices.delete(id);
 
-            if (!productDel) {
-                res.render('productNotFound');
-            } else {
-                res.render('productDeleted', { productDel });
-            }
+            if (!productDel) res.render('productNotFound');
+            else res.render('productDeleted', { productDel });
         } catch (error) {
             next(error);
         }
     }
 }
+
+
 
 
 

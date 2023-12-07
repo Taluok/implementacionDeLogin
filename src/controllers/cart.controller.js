@@ -16,7 +16,6 @@ export default class CartController {
         try {
             const { cid, pid } = req.params;
             const productDel = await cartServices.deleteProductFromCart(cid, pid);
-
             res.json(productDel);
         } catch (error) {
             next(error);
@@ -64,6 +63,7 @@ export default class CartController {
         }
     }
 }
+
 
 
 

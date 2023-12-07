@@ -1,4 +1,4 @@
-import UserServices from "../services/user.services.js";
+import UserServices from '../services/user.services.js';
 
 const userService = new UserServices();
 
@@ -7,12 +7,15 @@ export default class UserController {
         console.log(req.body);
         try {
             const user = await userService.register(req.body);
-            if (user) res.redirect('/views');
-            else res.redirect('/views/errorRegister')
+            if (user) {
+                res.redirect('/views');
+            } else {
+                res.redirect('/views/errorRegister');
+            }
         } catch (error) {
             next(error);
-        };
-    };
+        }
+    }
 
     async login(req, res, next) {
         try {
@@ -22,10 +25,12 @@ export default class UserController {
                 req.session.email = email;
                 req.session.password = password;
                 req.session.user = user;
-                res.redirect('/views/profile')
-            } else res.redirect('/views/errorLogin')
+                res.redirect('/views/profile');
+            } else {
+                res.redirect('/views/errorLogin');
+            }
         } catch (error) {
-            next(error)
-        };
-    };
-};
+            next(error);
+        }
+    }
+}

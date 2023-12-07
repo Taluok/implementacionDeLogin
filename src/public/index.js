@@ -1,12 +1,11 @@
 const socketClient = io();
 
-socketClient.on("saludoDesdeBack", (msg) => {
+socketClient.on('saludoDesdeBack', (msg) => {
     console.log(msg);
-
-    socketClient.emit("respuestaDesdeFront", "Muchas gracias");
+    socketClient.emit('respuestaDesdeFront', 'Muchas gracias');
 });
 
-const form = document.getElementById("form");
+const form = document.getElementById('form');
 const inputTitle = document.getElementById('title');
 const inputDescription = document.getElementById('description');
 const inputCode = document.getElementById('code');
@@ -24,18 +23,17 @@ form.onsubmit = (e) => {
     const stock = inputStock.value;
     const category = inputCategory.value;
     const product = { title, description, code, price, stock, category };
-    console.log("Enviando producto:", product);
+    console.log('Enviando producto:', product);
     socketClient.emit('newProduct', product);
 };
 
 socketClient.on('arrayProducts', (productsArray) => {
     let infoProducts = '';
-    productsArray.forEach(p => {
-        infoProducts += `${p.title} - $${p.price} </br>`
+    productsArray.forEach((p) => {
+        infoProducts += `${p.title} - $${p.price} </br>`;
     });
     inputProducts.innerHTML = infoProducts;
 });
-
 
 socketClient.on('message', (msg) => {
     console.log(msg);
