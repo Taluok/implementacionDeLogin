@@ -1,69 +1,71 @@
-import UserModel from '../models/userModel.js';
+import CartServices from '../services/cart.services.js';
 
-const registerUser = async (req, res) => {
-    const { first_name, last_name, email, age, password } = req.body;
+const cartServices = new CartServices();
 
-    try {
-        // Verificar si el usuario ya existe
-        const existingUser = await UserModel.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ message: 'El usuario ya existe' });
+export default class CartController {
+    async getAllCarts(req, res, next) {
+        try {
+            const carts = await cartServices.getAll();
+            res.json(carts);
+        } catch (error) {
+            next(error);
         }
-
-        // Crear nuevo usuario
-        const newUser = new UserModel({
-            first_name,
-            last_name,
-            email,
-            age,
-            password,
-            role: 'usuario' // Todos los usuarios que no son admin tienen el rol "usuario"
-        });
-
-        // Guardar en la base de datos
-        await newUser.save();
-
-        res.status(201).json({ message: 'Usuario registrado exitosamente' });
-    } catch (error) {
-        console.error('Error al registrar usuario:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
     }
-};
 
-const loginUser = async (req, res) => {
-    const { email, password } = req.body;
+    async deleteProductFromCart(req, res, next) {
+        try {
+            const { cid, pid } = req.params;
+            const productDel = await cartServices.deleteProductFromCart(cid, pid);
 
-    try {
-        // Verificar si el usuario existe
-        const user = await UserModel.findOne({ email, password });
-        if (!user) {
-            return res.status(401).json({ message: 'Credenciales inválidas' });
+            res.json(productDel);
+        } catch (error) {
+            next(error);
         }
-
-        // Asignar el objeto de usuario a la sesión
-        req.session.user = {
-            _id: user._id,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            email: user.email,
-            role: user.email === 'adminCoder@coder.com' && user.password === 'adminCod3r123' ? 'admin' : 'usuario'
-        };
-
-        // Redireccionar a la vista de productos después del login exitoso
-        res.redirect('/products');
-    } catch (error) {
-        console.error('Error al iniciar sesión:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
     }
-};
 
-const logoutUser = (req, res) => {
-    // Lógica para cerrar sesión y redirigir
-    req.session.destroy();
-    res.redirect('/');
-};
+    async createCart(req, res, next) {
+        try {
+            const newCart = await cartServices.createCart(req.body);
+            if (!newCart) {
+                res.json({ msg: 'No se pudo crear el carrito' });
+            } else {
+                res.json(newCart);
+            }
+        } catch (error) {
+            next(error);
+        }
+    }
 
-export { registerUser, loginUser, logoutUser };
+    async updateCart(req, res, next) {
+        try {
+            const { cid } = req.params;
+            const body = req.body;
+            const updatedCart = await cartServices.saveProductToCart(cid, body);
+
+            if (updatedCart) {
+                res.status(200).json(updatedCart);
+            } else {
+                res.status(404).json({ error: 'Carrito o producto no encontrado' });
+            }
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async updateCartProduct(req, res, next) {
+        try {
+            const { cid, pid } = req.params;
+            const body = req.body;
+            const updatedCart = await cartServices.updCartProductsAmount(cid, pid, body);
+
+            return res.json(updatedCart);
+        } catch (error) {
+            next(error);
+        }
+    }
+}
+
+
 
 
 
