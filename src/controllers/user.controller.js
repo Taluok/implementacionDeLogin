@@ -10,7 +10,7 @@ export default class UserController {
             if (user) {
                 res.redirect('/views');
             } else {
-                res.redirect('/views/errorRegister');
+                res.redirect('error');
             }
         } catch (error) {
             next(error);
@@ -27,7 +27,7 @@ export default class UserController {
                 req.session.user = user;
                 res.redirect('/views/profile');
             } else {
-                res.redirect('/views/errorLogin');
+                res.redirect('error');
             }
         } catch (error) {
             next(error);
