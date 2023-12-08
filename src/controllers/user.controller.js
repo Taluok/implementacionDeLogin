@@ -8,9 +8,9 @@ export default class UserController {
         try {
             const user = await userService.register(req.body);
             if (user) {
-                res.redirect('/views');
+                res.redirect('/views/register');
             } else {
-                res.redirect('error');
+                res.redirect('/views/errorRegister');
             }
         } catch (error) {
             next(error);
@@ -27,7 +27,7 @@ export default class UserController {
                 req.session.user = user;
                 res.redirect('/views/profile');
             } else {
-                res.redirect('error');
+                res.redirect('/views/errorRegister');
             }
         } catch (error) {
             next(error);
