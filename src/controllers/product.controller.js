@@ -7,19 +7,25 @@ export default class ProductController {
         try {
             const { page, limit, sort, query } = req.query;
             const products = await productServices.getAll(page, limit, sort, query);
-
+    
+            // Obtener el usuario de la sesión
+            const user = req.session.user;
+    
+            // Agregar mensaje de bienvenida en la vista
+            const welcomeMessage = user ? `Bienvenido, ${user.first_name} ${user.last_name}!` : '';
+    
             let srtOptions = '';
             if (limit) srtOptions += `&limit=${limit}`;
             if (sort) srtOptions += `&sort=${sort}`;
-
+    
             products.prevLink = products.hasPrevPage
                 ? `?page=${products.prevPage}${srtOptions}`
                 : null;
             products.nextLink = products.hasNextPage
                 ? `?page=${products.nextPage}${srtOptions}`
                 : null;
-
-            res.render('products', { products });
+    
+            res.render('products', { products, welcomeMessage });
         } catch (error) {
             next(error);
         }

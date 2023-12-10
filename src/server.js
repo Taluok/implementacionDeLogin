@@ -10,8 +10,8 @@ import { MONGOATLAS } from './db/database.js';
 import handlebars from 'express-handlebars';
 import productRouter from './routes/product.router.js';
 import cartRouter from './routes/cart.router.js';
-
-const app = express();
+import { loginRouter } from './routes/login.router.js';
+import { productsRouter } from './routes/products.router.js'
 
 const mongoStoreOptions = {
     store: MongoStore.create({
@@ -32,6 +32,8 @@ const mongoStoreOptions = {
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use('/login', loginRouter);
+app.use('/products', productsRouter);
 
 // Configuración de handlebars
 app.engine('handlebars', handlebars.engine());
@@ -42,11 +44,11 @@ app.use(session(mongoStoreOptions));
 
 app.use('/views', viewRouter);
 app.use('/users', userRouter);
-app.use('/products', productRouter); 
-app.use('/cart', cartRouter); 
+app.use('/products', productRouter);
+app.use('/cart', cartRouter);
 
 const PORT = 8080;
-app.listen(PORT, () => console.log(`Server ok on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server on port ${PORT}`));
 
 
 
