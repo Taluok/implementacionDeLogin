@@ -13,6 +13,8 @@ import cartRouter from './routes/cart.router.js';
 import { loginRouter } from './routes/login.router.js';
 import { productsRouter } from './routes/products.router.js'
 
+const app = express();
+
 const mongoStoreOptions = {
     store: MongoStore.create({
         mongoUrl: MONGOATLAS,
@@ -32,6 +34,7 @@ const mongoStoreOptions = {
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+
 app.use('/login', loginRouter);
 app.use('/products', productsRouter);
 

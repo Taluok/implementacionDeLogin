@@ -1,18 +1,13 @@
-import { ProductModel } from '../models/product.model.js';
+import { ProductModel } from "../models/product.model.js";
 
 export default class ProductServices {
-    async getAll(page = 1, limit = 10, sortOrder = 'desc', query = null) {
+    async getProducts() {
         try {
-            const queryObject = query ? JSON.parse(query) : {};
-            const filter = this.buildFilter(queryObject);
-
-            const myAggregate = ProductModel.aggregate([{ $match: filter }]);
-            const options = { page, limit, sort: { price: sortOrder } };
-
-            const result = await ProductModel.aggregatePaginate(myAggregate, options);
-            return result;
+            const products = await ProductModel.find();
+            return products;
         } catch (error) {
-            console.error('Error in getAll:', error);
+            console.error('Error al obtener productos:', error);
+            throw error; 
         }
     }
 
@@ -20,23 +15,30 @@ export default class ProductServices {
         try {
             return await ProductModel.findById(id);
         } catch (error) {
-            console.error('Error in getById:', error);
+            console.error('Error al obtener producto por ID:', error);
+            throw error;
         }
     }
 
-    async create(productData) {
+    async create(obj) {
         try {
-            return await ProductModel.create(productData);
+            return await ProductModel.create(obj);
         } catch (error) {
-            console.error('Error in create:', error);
+            console.error('Error al crear producto:', error);
+            throw error;
         }
     }
 
-    async update(id, updatedData) {
+    async update(id, obj) {
         try {
-            return await ProductModel.findByIdAndUpdate({ _id: id }, updatedData, { new: true });
+            return await ProductModel.findByIdAndUpdate(
+                { _id: id },
+                obj,
+                { new: true }
+            );
         } catch (error) {
-            console.error('Error in update:', error);
+            console.error('Error al actualizar producto:', error);
+            throw error;
         }
     }
 
@@ -44,20 +46,9 @@ export default class ProductServices {
         try {
             return await ProductModel.findByIdAndDelete(id);
         } catch (error) {
-            console.error('Error in delete:', error);
+            console.error('Error al eliminar producto:', error);
+            throw error;
         }
-    }
-
-    buildFilter(queryObject) {
-        const filter = {};
-        for (const [key, value] of Object.entries(queryObject)) {
-            if (key === 'category') {
-                filter.category = value;
-            } else if (key === 'disponibility') {
-                filter.stock = value ? { $gt: 0 } : { $lt: 1 };
-            }
-        }
-        return filter;
     }
 }
 

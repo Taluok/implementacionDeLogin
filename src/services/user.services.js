@@ -5,6 +5,15 @@ export default class UserServices {
         return await UserModel.findOne({email});
     };
 
+    async getUsers(){
+        try{
+            const users = await UserModel.find();
+            return users;
+        }catch(error){
+            next(error)
+        }
+    };
+
     async register(user) {
         try {
             const { email, password } = user;
