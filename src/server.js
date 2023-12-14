@@ -1,22 +1,22 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
-import { __dirname } from './utils.js';
 import MongoStore from 'connect-mongo';
+import handlebars from 'express-handlebars';
+import passport from 'passport';
+import productsRouter from './routes/products.router.js';
 import userRouter from './routes/user.router.js';
 import viewRouter from './routes/views.router.js';
-import './db/database.js';
-import { MONGOATLAS } from './db/database.js';
-import handlebars from 'express-handlebars';
 import productRouter from './routes/product.router.js';
 import cartRouter from './routes/cart.router.js';
-import { loginRouter } from './routes/login.router.js';
-import { productsRouter } from './routes/products.router.js'
+import './db/database.js';
+import { MONGOATLAS } from './db/database.js';
+import "./passport/github-strategy.js";
 
 const app = express();
 
 const mongoStoreOptions = {
-    store: MongoStore.create({
+    store: new MongoStoreInstance({
         mongoUrl: MONGOATLAS,
         ttl: 120,
         crypto: {
@@ -35,9 +35,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/login', loginRouter);
-app.use('/products', productsRouter);
-
 // Configuración de handlebars
 app.engine('handlebars', handlebars.engine());
 app.set('view engine', 'handlebars');
@@ -45,13 +42,21 @@ app.set('views', __dirname + '/views');
 
 app.use(session(mongoStoreOptions));
 
-app.use('/views', viewRouter);
+// Configuración de Passport para sesiones
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Rutas
+app.use('/login', loginRouter);
+app.use('/products', productsRouter);
+app.use('/', viewRouter);
 app.use('/users', userRouter);
 app.use('/products', productRouter);
 app.use('/cart', cartRouter);
 
 const PORT = 8080;
 app.listen(PORT, () => console.log(`Server on port ${PORT}`));
+
 
 
 

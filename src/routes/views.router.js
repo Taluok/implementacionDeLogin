@@ -14,7 +14,7 @@ router.get('/profile', (req, res)=>{
         const { first_name } = user;
         res.render('profile', { user, first_name });
     } else {
-        res.redirect('/views/errorLogin');
+        res.redirect('/errorLogin');
     }
 });
 router.get('/errorRegister', (req, res)=>{
